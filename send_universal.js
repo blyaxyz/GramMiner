@@ -76,7 +76,7 @@ if (args['--bin']) {
 }
 console.log('Using bin', bin);
 const gpu = (_a = args['--gpu']) !== null && _a !== void 0 ? _a : 0;
-const timeout = (_b = args['--timeout']) !== null && _b !== void 0 ? _b : 5;
+const timeout = (_b = args['--timeout']) !== null && _b !== void 0 ? _b : 1;
 const allowShards = (_c = args['--allow-shards']) !== null && _c !== void 0 ? _c : false;
 console.log('Using GPU', gpu);
 console.log('Using timeout', timeout);
@@ -127,7 +127,7 @@ function getPowInfo(liteClient, address) {
         }
         else if (liteClient instanceof tonapi_sdk_js_1.Api) {
             try {
-                const powInfo = yield CallForSuccess(() => liteClient.blockchain.execGetMethodForBlockchainAccount(address.toRawString(), 'get_pow_params', {}), 50, 300);
+                const powInfo = yield CallForSuccess(() => liteClient.blockchain.execGetMethodForBlockchainAccount(address.toRawString(), 'get_pow_params', {}), 50, 100);
                 const seed = BigInt(powInfo.stack[0].num);
                 const complexity = BigInt(powInfo.stack[1].num);
                 const iterations = BigInt(powInfo.stack[2].num);
@@ -204,7 +204,7 @@ function main() {
             if (seed === lastMinedSeed) {
                 // console.log('Wating for a new seed')
                 updateBestGivers(liteClient, wallet.address);
-                yield delay(200);
+                yield delay(100);
                 continue;
             }
             const randomName = (yield (0, crypto_1.getSecureRandomBytes)(8)).toString('hex') + '.boc';
@@ -245,7 +245,7 @@ function main() {
                     }
                 }
                 else {
-                    const res = yield CallForSuccess(() => liteClient.blockchain.execGetMethodForBlockchainAccount(wallet.address.toRawString(), "seqno", {}), 50, 250);
+                    const res = yield CallForSuccess(() => liteClient.blockchain.execGetMethodForBlockchainAccount(wallet.address.toRawString(), "seqno", {}), 50, 150);
                     if (res.success) {
                         seqno = Number(BigInt(res.stack[0].num));
                     }
@@ -290,7 +290,7 @@ function sendMinedBoc(wallet, seqno, keyPair, giverAddress, boc) {
                     // lastError = err
                     k++;
                     if (e.status === 429) {
-                        yield delay(200);
+                        yield delay(100);
                     }
                     else {
                         // console.log('tonapi error')
@@ -359,7 +359,7 @@ function testMiner() {
 // Function to call ton api untill we get response.
 // Because testnet is pretty unstable we need to make sure response is final
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CallForSuccess(toCall, attempts = 20, delayMs = 100) {
+function CallForSuccess(toCall, attempts = 20, delayMs = 20) {
     return __awaiter(this, void 0, void 0, function* () {
         if (typeof toCall !== 'function') {
             throw new Error('unknown input');
