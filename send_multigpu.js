@@ -78,7 +78,7 @@ if (args['--bin']) {
 }
 console.log('Using bin', bin);
 const gpus = (_a = args['--gpu-count']) !== null && _a !== void 0 ? _a : 1;
-const timeout = (_b = args['--timeout']) !== null && _b !== void 0 ? _b : 1;
+const timeout = (_b = args['--timeout']) !== null && _b !== void 0 ? _b : 2;
 const allowShards = (_c = args['--allow-shards']) !== null && _c !== void 0 ? _c : false;
 console.log('Using GPUs count', gpus);
 console.log('Using timeout', timeout);
@@ -206,7 +206,7 @@ function main() {
             if (seed === lastMinedSeed) {
                 // console.log('Wating for a new seed')
                 updateBestGivers(liteClient, wallet.address);
-                yield delay(100);
+                yield delay(200);
                 continue;
             }
             const promises = [];
@@ -320,7 +320,7 @@ function sendMinedBoc(wallet, seqno, keyPair, giverAddress, boc) {
                     // lastError = err
                     k++;
                     if (e.status === 429) {
-                        yield delay(100);
+                        yield delay(200);
                     }
                     else {
                         // console.log('tonapi error')
@@ -392,7 +392,7 @@ function testMiner(gpus) {
 // Function to call ton api untill we get response.
 // Because testnet is pretty unstable we need to make sure response is final
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CallForSuccess(toCall, attempts = 20, delayMs = 20) {
+function CallForSuccess(toCall, attempts = 20, delayMs = 50) {
     return __awaiter(this, void 0, void 0, function* () {
         if (typeof toCall !== 'function') {
             throw new Error('unknown input');
